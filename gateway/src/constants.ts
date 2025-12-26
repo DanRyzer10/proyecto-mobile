@@ -1,0 +1,7 @@
+export const PORT = process.env.PORT || 8080;
+export const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID || '';
+export const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET || '';
+export const GOOGLE_AUTH_URL = process.env.GOOGLE_AUTH_URL || '';
+export const GOOGLE_REDIRECT_URI = process.env.GOOGLE_REDIRECT_URI || '';
+export const GOOGLE_OAUTH_URL = process.env.GOOGLE_OAUTH_URL || '';
+export const GOOGLE_CLOUD_API = process.env.GOOGLE_CLOUD_API || '';
