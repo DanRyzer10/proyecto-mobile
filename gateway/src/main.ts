@@ -1,16 +1,26 @@
 import express from 'express';
-import { AppContext } from './config/app-context';
+import { AppContext } from './shared/infrastructure/app-context';
+import path from 'path';
 const app = express();
 app.use(express.json())
+
+// servir archivos estáticos para el cliente de prueba
+app.use('/public', express.static(path.join(__dirname, 'public')))
 
 
 
 
 const authController = AppContext.getAuthControllerInstance()
-
-
 app.post('/oauth/login',(req,res)=> {
     authController.signIn(req,res);
+})
+
+app.get('/oauth/google', (req,res) => {
+    authController.signIn(req,res);
+})
+
+app.get('/auth/google/callback', (req,res) => {
+    authController.oauthCallback(req,res)
 })
 const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => {

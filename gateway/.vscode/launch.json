@@ -1,0 +1,29 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "pwa-node",
+            "request": "launch",
+            "name": "Launch TS (ts-node-dev)",
+            "runtimeExecutable": "npx",
+            "runtimeArgs": [
+                "ts-node-dev",
+                "--respawn",
+                "--transpile-only",
+                "--inspect",
+                "src/main.ts"
+            ],
+            "cwd": "${workspaceFolder}",
+            "console": "integratedTerminal",
+            "skipFiles": [
+                "<node_internals>/**"
+            ]
+        },
+        {
+            "type": "pwa-node",
+            "request": "attach",
+            "name": "Attach to Process",
+            "processId": "${command:PickProcess}"
+        }
+    ]
+}
