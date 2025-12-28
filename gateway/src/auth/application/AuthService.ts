@@ -54,30 +54,6 @@ export class AuthService implements Auth {
             const userInfo = await userInfoResponse.json();
             console.log('User Info:', userInfo);
             return { tokens: data, user: userInfo };
-            
-
-                        // const tokenResponse = await fetch(`${GOOGLE_CLOUD_API}/token`,{
-                        //     method: 'POST',
-                        //     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                        //     body: new URLSearchParams({
-                        //         code: code as string,
-                        //         client_id: GOOGLE_CLIENT_ID,
-                        //         client_secret:GOOGLE_CLIENT_SECRET,
-                        //         redirect_uri: GOOGLE_REDIRECT_URI,
-                        //         grant_type: 'authorization_code'
-                        //     }) 
-                        // });
-                        // this.logger.info('Token response received from Google OAuth');
-                        // this.logger.info(`Token data: ${JSON.stringify(tokenResponse)}`);
-                        // const data = await tokenResponse.json();
-                        // const {access_token,id_token} = data;
-
-                        // const userInfoResponse = await fetch(`${GOOGLE_CLOUD_API}/oauth2/v2/userinfo`, {
-                        //         headers: {Authorization: `Bearer ${access_token}`}
-                        // });
-                        // const userResponse = await userInfoResponse.json();
-                        // this.logger.info(`User authenticated: ${userResponse.email}`);
-                        // return { tokens: data, user: userResponse };
         } catch(ex) {
             this.logger.error('OAuth handler error', ex);
             return Promise.reject(ex);

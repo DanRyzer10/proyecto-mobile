@@ -11,6 +11,7 @@ app.use('/public', express.static(path.join(__dirname, 'public')))
 
 
 const authController = AppContext.getAuthControllerInstance()
+const userController = AppContext.getUserControllerInstance();
 app.post('/oauth/login',(req,res)=> {
     authController.signIn(req,res);
 })
@@ -22,6 +23,15 @@ app.get('/oauth/google', (req,res) => {
 app.get('/auth/google/callback', (req,res) => {
     authController.oauthCallback(req,res)
 })
+
+app.get('/user/info',(req,res)=> {
+    userController.getUserInfo(req,res);
+})
+
+app.post('/user/create',(req,res)=> {
+    userController.createUser(req,res);
+})
+
 const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => {
     console.log('*     *')
