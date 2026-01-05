@@ -4,14 +4,18 @@ import path from 'path';
 const app = express();
 app.use(express.json())
 
-// servir archivos estáticos para el cliente de prueba
-app.use('/public', express.static(path.join(__dirname, 'public')))
 
+app.use('/public', express.static(path.join(__dirname, '../public')))
 
 
 
 const authController = AppContext.getAuthControllerInstance()
 const userController = AppContext.getUserControllerInstance();
+
+app.get('/',(req,res) => {
+    return res.send('Hello World :=)');
+})
+
 app.post('/oauth/login',(req,res)=> {
     authController.signIn(req,res);
 })
