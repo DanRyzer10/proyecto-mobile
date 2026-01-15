@@ -10,6 +10,7 @@ import { CourseService } from "@/course/application/course-service";
 import { CourseController } from "@/course/infrastructure/controllers/course-controller";
 import { AssignmentService } from "@/assignment/application/assignment-service";
 import { AssignmentController } from "@/assignment/infrastructure/controllers/assignment-controller";
+import { MoodleProxyController } from "@/auth/infrastructure/controllers/moodle-proxy-controller";
 /**
  * @export
  * @class AppContext
@@ -40,6 +41,10 @@ export class AppContext {
     public static getAssignmentControllerInstance(): AssignmentController {
         const assignmentService = new AssignmentService(this._httpService, this.logger);
         return new AssignmentController(assignmentService);
+    }
+
+    public static getMoodleProxyControllerInstance(): MoodleProxyController {
+        return new MoodleProxyController(this.logger);
     }
 
     public static eventSetup(): void {

@@ -24,6 +24,7 @@ app.get('/', (req, res) => {
 
 const courseController = AppContext.getCourseControllerInstance();
 const assignmentController = AppContext.getAssignmentControllerInstance();
+const moodleProxyController = AppContext.getMoodleProxyControllerInstance();
 app.post('/oauth/login', (req, res) => {
     authController.signIn(req, res);
 })
@@ -50,6 +51,15 @@ app.get('/course', (req, res) => {
 
 app.get('/assignment', (req, res) => {
     assignmentController.getAssignments(req, res);
+});
+
+// Proxy endpoints for Moodle Mobile App
+app.all('/login/token.php', (req, res) => {
+    moodleProxyController.proxyRequest(req, res);
+});
+
+app.all('/admin/tool/mobile/launch.php', (req, res) => {
+    moodleProxyController.proxyRequest(req, res);
 });
 
 const PORT = process.env.PORT || 8080;
