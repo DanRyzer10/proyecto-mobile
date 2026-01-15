@@ -12,20 +12,22 @@ services:
       MYSQL_CHARSET: utf8mb4
       MYSQL_COLLATION: utf8mb4_unicode_ci
     volumes:
-      - mariadb_data:/var/lib/mysql
+      - ./moodle-init.sql:/docker-entrypoint-initdb.d/init.sql
+      - mariadb_data_team:/var/lib/mysql
     networks:
       - moodle-network
     restart: unless-stopped
     command: --default-authentication-plugin=mysql_native_password
-
   moodle:
     build: .
     container_name: moodle-app
     ports:
       - "8080:80"
     volumes:
-      - moodle_data:/var/www/html
-      - moodledata_data:/var/www/moodledata
+      
+      - ./backup_html:/var/www/html
+      
+      - ./backup_moodledata:/var/www/moodledata
     depends_on:
       - mariadb
     networks:
@@ -48,11 +50,7 @@ services:
     restart: unless-stopped
 
 volumes:
-  mariadb_data:
-    driver: local
-  moodle_data:
-    driver: local
-  moodledata_data:
+  mariadb_data_team:
     driver: local
 
 networks:

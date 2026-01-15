@@ -11,6 +11,8 @@ export interface CreateMoodleUserInput {
   calendartype?: MoodleCalendarType;
   theme?: string;
   mailformat?: MoodleMailFormat;
+  courseid?: number;
+  role?: string;
   description?: string;
   city?: string;
   country?: string;
@@ -44,4 +46,10 @@ export type MoodleCalendarType = 'gregorian' | 'hijri' | 'hebrew';
 export interface MoodleCustomField {
   type: string;
   value: string;
+}
+
+export interface EnrollUser {
+  roleid: number;
+  userid: number;
+  courseid: number;
 }

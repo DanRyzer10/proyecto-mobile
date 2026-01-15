@@ -15,7 +15,7 @@ if ! command -v docker &> /dev/null; then
 fi
 
 echo "🔨 Construyendo imagen de Moodle..."
-docker compose -f docker-compose-custom.yml build
+docker compose -f docker-compose.yml build
 
 if [ $? -ne 0 ]; then
     echo ""
@@ -26,7 +26,7 @@ fi
 
 echo ""
 echo "🚀 Levantando contenedores..."
-docker compose -f docker-compose-custom.yml up -d
+docker compose -f docker-compose.yml up -d
 
 if [ $? -ne 0 ]; then
     echo ""
@@ -67,9 +67,9 @@ while [ $attempt -lt $max_attempts ]; do
         echo "================================================"
         echo ""
         echo "💡 Comandos útiles:"
-        echo "  Ver logs:    docker compose -f docker-compose-custom.yml logs -f"
-        echo "  Detener:     docker compose -f docker-compose-custom.yml stop"
-        echo "  Eliminar:    docker compose -f docker-compose-custom.yml down -v"
+        echo "  Ver logs:    docker compose -f docker-compose.yml logs -f"
+        echo "  Detener:     docker compose -f docker-compose.yml stop"
+        echo "  Eliminar:    docker compose -f docker-compose.yml down -v"
         echo ""
         exit 0
     fi
@@ -81,4 +81,4 @@ done
 echo ""
 echo "⚠️  Moodle está tardando más de lo esperado."
 echo "Verifica los logs con:"
-echo "  docker compose -f docker-compose-custom.yml logs -f moodle"
+echo "  docker compose -f docker-compose.yml logs -f moodle"

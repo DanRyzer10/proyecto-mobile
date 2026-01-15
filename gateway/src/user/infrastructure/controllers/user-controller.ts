@@ -1,7 +1,7 @@
 import { HttpService } from "@/shared/application/http.service";
 import { UserService } from "@/user/application/userService";
 import { Request, Response } from "express";
-import { createUserSchema, createUsersSchema } from "../dtos/user.schema";
+import { createUserPayloadSchema } from "../dtos/user.schema";
 
 export class UserController {
     constructor(private httpService:HttpService, private userService:UserService){}
@@ -18,14 +18,14 @@ export class UserController {
             return res.status(500).json({error: 'Error fetching user info', details: ex});
         }
     }
+    
     async createUser(req:Request,res:Response): Promise<any> {
         try {
-            const {data} = req.body;
-            const validation = createUsersSchema.safeParse(data);
+            const validation = createUserPayloadSchema.safeParse(req.body);
             if(!validation.success) {
                 return res.status(400).json({error: 'Invalid user data', details: validation.error});
             }
-            const response = await this.userService.createUser(validation.data);
+            const response = await this.userService.createUser(validation.data.data);
             return res.json(response);
 
         }catch(ex) {

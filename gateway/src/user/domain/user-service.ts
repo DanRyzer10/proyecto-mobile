@@ -1,7 +1,7 @@
 import { CreateMoodleUserInput } from "./create-user";
 
 export interface IUserService {
-    createUser(data: any[]): Promise<any>;
+    createUser(data: CreateMoodleUserInput): Promise<any>;
     updateUser(id: number, data: Partial<CreateMoodleUserInput>): Promise<any>;
     getUser(id: number): Promise<any>;
     deleteUser(id: number): Promise<any>;
