@@ -9,8 +9,6 @@ export class AssignmentService {
         try {
             this.logger.info("Fetching assignments from Moodle");
             const response = await this.httpService.getRequest("get_assignments", {});
-
-            // Moodle mod_assign_get_assignments returns { courses: [ { assignments: [] } ] }
             if (!response.courses || !Array.isArray(response.courses)) {
                 this.logger.error("Invalid response format from Moodle");
                 throw new Error("Invalid response format");
