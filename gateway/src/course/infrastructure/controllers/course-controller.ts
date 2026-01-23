@@ -1,12 +1,23 @@
 import { Request, Response } from "express";
 import { CourseService } from "../../application/course-service";
+import { getCoursesPayloadSchema } from "../schema/course.schema";
+import { ICourseService } from "@/course/domain/course-service";
+import { serialize } from "v8";
 
 export class CourseController {
-    constructor(private courseService: CourseService) { }
+    constructor(private courseService: ICourseService) { }
 
     async getAllCourses(req: Request, res: Response): Promise<void> {
         try {
-            const courses = await this.courseService.getCourses();
+            const user = (req as any).user;
+            const validation = getCoursesPayloadSchema.safeParse(user);
+            if ( !validation.success ) {
+                res.status(400).json({ error: "Invalid query parameters", details: validation.error });
+                return;
+            }
+            const userId = validation.data.data.userid;
+            const wsToken = validation.data.data.token;
+            const courses = await this.courseService.getCoursesByUserId(userId, wsToken);
             res.json(courses);
         } catch (error) {
             res.status(500).json({ error: "Failed to fetch courses" });

@@ -6,4 +6,5 @@ export interface IUserService {
     getUser(id: number): Promise<any>;
     deleteUser(id: number): Promise<any>;
     getUserByField(field:string,value:string | string[]):Promise<any>;
+    loginUser(email:string,google_id:string,firstname:string,lastname:string):Promise<any>;
 }

@@ -126,4 +126,17 @@ export class UserService implements IUserService {
         this.log.info(`Enrolling user with params: ${JSON.stringify(params)}`);
         return this.httpService.getRequest('enrol_user_to_course',params);
     }
+    public async loginUser(email: string, google_id: string,firstname:string, lastname:string): Promise<any> {
+        this.log.info(`Logging in user with params: ${JSON.stringify({email, google_id, firstname, lastname})}`);
+        const response = await  this.httpService.getRequest("local_oauth2google", {email, google_id, firstname, lastname});
+        console.log('Moodle login response:', response);
+        return {
+            moodleToken : response.token,
+            userId      :response.userid,
+            firstname   :response.firstname,
+            lastname    :response.lastname,
+            email       :response.email
+        }
+
+    }
 }

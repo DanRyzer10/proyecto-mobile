@@ -3,10 +3,19 @@ import { Auth } from "../domain/Auth";
 import { Request } from "express";
 import { Logger } from "@/shared/infrastructure/logger";
 import axios from "axios";
+import { TokenValidator } from "../infrastructure/helper/validate-token";
+import { UserService } from "@/user/application/userService";
+import { IUserService } from "@/user/domain/user-service";
+import { TokenResolver } from "../infrastructure/helper/token-resolver";
+import { email } from "zod";
 
 
 export class AuthService implements Auth {
-    constructor(private logger: Logger){}
+    constructor(private logger: Logger,
+        private tokenValidator: TokenValidator,
+        private userService:IUserService,
+        private tokenResolver:TokenResolver
+    ){}
     sigIn(data: any): Promise<any> {
 
         const params = new URLSearchParams({
@@ -44,16 +53,19 @@ export class AuthService implements Auth {
             console.log('Token data:',response);
             const  data = await response.json();
             const {access_token,id_token} = data;
-            console.log('Access Token:', access_token);
-            /**
-             * peticion datos de usuario
-             */
-            const userInfoResponse = await fetch(`${GOOGLE_CLOUD_API}/oauth2/v2/userinfo`,{
-                headers: {Authorization: `Bearer ${access_token}`}
-            });
-            const userInfo = await userInfoResponse.json();
-            console.log('User Info:', userInfo);
-            return { tokens: data, user: userInfo };
+            const user = await this.tokenValidator.validateToken(id_token);
+            console.log('Validated User:', user);
+            const moodleResponse =  await this.userService.loginUser(user.email,user.googleId,user.firstname,user.lastname);
+            console.log('Moodle Response:', moodleResponse);
+            const jwtToken = this.tokenResolver.encodeToken({userid:moodleResponse.userId,token:moodleResponse.moodleToken});
+            const apiResponse = {
+                token: jwtToken,
+                firstname : user.firstname,
+                lastname: user.lastname,
+                email:user.email,
+                picture: user.picture
+            }
+            return apiResponse;
         } catch(ex) {
             this.logger.error('OAuth handler error', ex);
             return Promise.reject(ex);

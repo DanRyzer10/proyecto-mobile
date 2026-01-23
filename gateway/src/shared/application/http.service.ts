@@ -10,13 +10,14 @@ export class HttpService {
         this.defaultParams = defaultParams; 
     }
 
-    async getRequest(functionKey: keyof typeof functionMap, params: object): Promise<any> {
+    async getRequest(functionKey: keyof typeof functionMap, params: object,resolveToken:boolean = false): Promise<any> {
         const url = new URL(this.baseUrl);
         const functionKeyValue: string = functionMap[functionKey];
         url.searchParams.append('wsfunction', functionKeyValue);
         Object.entries(this.defaultParams).forEach(([key,value])=>{
             url.searchParams.append(key, value as string);
         });
+        if (resolveToken) url.searchParams.delete('wstoken');
         Object.entries(params).forEach(([key,value])=>{
             url.searchParams.append(key, value as string);
         });

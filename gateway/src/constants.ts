@@ -9,3 +9,4 @@ export const GOOGLE_CLOUD_TOKEN_URL = process.env.GOOGLE_CLOUD_TOKEN_URL || '';
 export const MOODLE_TOKEN = process.env.MOODLE_TOKEN || '';
 export const MOODLE_REST_FORMAT = process.env.MOODLE_REST_FORMAT || 'json';
 export const MOODLE_URL = process.env.MOODLE_URL || '';
+export const JWT_SECRET = process.env.JWT_SECRET;

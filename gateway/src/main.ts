@@ -3,6 +3,7 @@ import { AppContext } from './shared/infrastructure/app-context';
 import path from 'path';
 import swaggerUi from 'swagger-ui-express';
 import { swaggerSpec } from './config/swagger';
+import { authMiddleware } from './auth/infrastructure/middlewares/auth-middleware';
 
 const app = express();
 app.use(express.json())
@@ -198,7 +199,7 @@ app.post('/user/create', (req, res) => {
 
 /**
  * @swagger
- * /course:
+ * /courses:
  *   get:
  *     summary: Get all courses
  *     description: Retrieves a list of all available courses.
@@ -221,7 +222,7 @@ app.post('/user/create', (req, res) => {
  *                   description:
  *                     type: string
  */
-app.get('/course', (req, res) => {
+app.get('/courses',authMiddleware, (req, res) => {
     courseController.getAllCourses(req, res);
 });
 
@@ -251,7 +252,7 @@ app.get('/course', (req, res) => {
  *                     type: string
  *                     format: date-time
  */
-app.get('/assignment', (req, res) => {
+app.get('/assignment',authMiddleware, (req, res) => {
     assignmentController.getAssignments(req, res);
 });
 

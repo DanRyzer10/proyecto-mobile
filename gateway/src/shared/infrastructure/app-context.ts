@@ -11,6 +11,8 @@ import { CourseController } from "@/course/infrastructure/controllers/course-con
 import { AssignmentService } from "@/assignment/application/assignment-service";
 import { AssignmentController } from "@/assignment/infrastructure/controllers/assignment-controller";
 import { MoodleProxyController } from "@/auth/infrastructure/controllers/moodle-proxy-controller";
+import { TokenValidator } from "@/auth/infrastructure/helper/validate-token";
+import { TokenResolver } from "@/auth/infrastructure/helper/token-resolver";
 /**
  * @export
  * @class AppContext
@@ -19,12 +21,14 @@ import { MoodleProxyController } from "@/auth/infrastructure/controllers/moodle-
  */
 export class AppContext {
     private static logger: Logger = new Logger();
+    private static _validationToken:TokenValidator = new TokenValidator();
 
     private static _httpService: HttpService = new HttpService(this.logger);
     private static _userService: UserService = new UserService(this._httpService, this.logger);
+    private static _tokenResolver: TokenResolver = new TokenResolver();
 
     public static getAuthControllerInstance(): AuthController {
-        const authService = new AuthService(this.logger)
+        const authService = new AuthService(this.logger,this._validationToken,this._userService,this._tokenResolver);
         return new AuthController(authService);
     }
 

@@ -11,7 +11,9 @@ export class AuthController {
     async oauthCallback(req: Request, res: Response): Promise<void> {
         try {
             const result = await this.authService.oauthHandler(req as any);
+            console.log('Respuesta final xd', result);
             res.send(`<p>Hello world</p>`);
+
         } catch (ex: any) {
             res.status(500).send(`OAuth callback error: ${ex?.message || String(ex)}`);
         }
