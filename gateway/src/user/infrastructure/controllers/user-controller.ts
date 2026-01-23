@@ -21,7 +21,9 @@ export class UserController {
     
     async createUser(req:Request,res:Response): Promise<any> {
         try {
+            console.log('Received create user request with body:', req.body);
             const validation = createUserPayloadSchema.safeParse(req.body);
+            console.log('Validation result:', validation);
             if(!validation.success) {
                 return res.status(400).json({error: 'Invalid user data', details: validation.error});
             }

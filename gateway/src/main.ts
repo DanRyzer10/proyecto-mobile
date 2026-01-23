@@ -140,7 +140,7 @@ app.get('/user/info', (req, res) => {
  * /user/create:
  *   post:
  *     summary: Create user
- *     description: Creates a new user.
+ *     description: Creates a new user. The request body must wrap user fields inside a "data" object.
  *     tags:
  *       - User
  *     requestBody:
@@ -150,18 +150,42 @@ app.get('/user/info', (req, res) => {
  *           schema:
  *             type: object
  *             required:
- *               - email
- *               - password
- *               - name
+ *               - data
  *             properties:
- *               email:
- *                 type: string
- *                 format: email
- *               password:
- *                 type: string
- *                 format: password
- *               name:
- *                 type: string
+ *               data:
+ *                 type: object
+ *                 required:
+ *                   - email
+ *                   - password
+ *                   - name
+ *                   - role
+ *                   - username
+ *                   - firstname
+ *                   - lastname
+ *                 properties:
+ *                   email:
+ *                     type: string
+ *                     format: email
+ *                     example: user@example.com
+ *                   password:
+ *                     type: string
+ *                     format: password
+ *                     example: Roberto12
+ *                   name:
+ *                     type: string
+ *                     example: string
+ *                   role:
+ *                     type: string
+ *                     example: string
+ *                   username:
+ *                     type: string
+ *                     example: recorder
+ *                   firstname:
+ *                     type: string
+ *                     example: string
+ *                   lastname:
+ *                     type: string
+ *                     example: string
  *     responses:
  *       201:
  *         description: User created successfully
