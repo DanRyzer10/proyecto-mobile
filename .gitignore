@@ -1,2 +1,3 @@
 ./backup_html
 ./backup_moodle_data
+./terraform/terraform.tfvars

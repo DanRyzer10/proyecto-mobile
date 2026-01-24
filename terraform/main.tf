@@ -10,7 +10,7 @@ terraform {
 
   backend "azurerm" {
     resource_group_name = "terraform-state-rg"
-    storage_account_name = "tfstateangel"
+    storage_account_name = "tfstateangelcan01"
     container_name = "tfstate"
     key = "moodle-gateway.tfstate"
   }
@@ -60,7 +60,7 @@ resource "azurerm_linux_web_app" "app" {
     site_config {
       always_on = false
       application_stack {
-        node_version = "24-lts"
+        node_version = "20-lts"
       }
 
       cors {
@@ -72,7 +72,7 @@ resource "azurerm_linux_web_app" "app" {
     }
 
     app_settings = {
-        "WEBSITE_NODE_DEFAULT_VERSION"          = "~24"
+        "WEBSITE_NODE_DEFAULT_VERSION"          = "~20"
         "SCM_DO_BUILD_DURING_DEPLOYMENT"        = "true"
         "NODE_ENV"                              = var.environment
         "PORT"                                  = "3000"
@@ -122,7 +122,7 @@ resource "azurerm_application_insights" "ai" {
 }
 
 resource "azurerm_key_vault" "kv" {
-    name = "${var.app_name}-kv"
+    name = substr("${var.app_name}-kv", 0, 24)
     location = azurerm_resource_group.rg.location
     resource_group_name = azurerm_resource_group.rg.name
     tenant_id = data.azurerm_client_config.current.tenant_id
