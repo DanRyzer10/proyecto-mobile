@@ -133,3 +133,7 @@
 {"level":"info","message":"Making GET request to http://150.136.56.67:8080/webservice/rest/server.php?wsfunction=mod_assign_get_assignments&moodlewsrestformat=json&wstoken=ebbf0a6defcdcafb143b382ec80274d0","timestamp":"2026-01-24 19:10:42"}
 {"level":"info","message":"Making GET request to http://150.136.56.67:8080/webservice/rest/server.php?wsfunction=mod_assign_get_assignments&moodlewsrestformat=json&wstoken=ebbf0a6defcdcafb143b382ec80274d0&courseids=2%2C3","timestamp":"2026-01-24 19:11:57"}
 {"level":"info","message":"Making GET request to http://150.136.56.67:8080/webservice/rest/server.php?wsfunction=mod_assign_get_assignments&moodlewsrestformat=json&wstoken=ebbf0a6defcdcafb143b382ec80274d0&courseids%5B0%5D=2&courseids%5B1%5D=3","timestamp":"2026-01-24 19:25:28"}
+{"level":"info","message":"Making GET request to http://150.136.56.67:8080/webservice/rest/server.php?wsfunction=core_enrol_get_users_courses&moodlewsrestformat=json&userid=2&wstoken=ebbf0a6defcdcafb143b382ec80274d0","timestamp":"2026-01-24 22:39:07"}
+{"level":"info","message":"Making GET request to http://150.136.56.67:8080/webservice/rest/server.php?wsfunction=mod_assign_get_assignments&moodlewsrestformat=json&wstoken=ebbf0a6defcdcafb143b382ec80274d0&courseids%5B0%5D=2","timestamp":"2026-01-24 22:39:19"}
+{"level":"info","message":"Uploading file to http://150.136.56.67:8080/webservice/upload.php","timestamp":"2026-01-24 22:54:05"}
+{"level":"info","message":"Uploading file to http://150.136.56.67:8080/webservice/upload.php","timestamp":"2026-01-24 22:58:44"}

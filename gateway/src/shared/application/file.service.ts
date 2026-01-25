@@ -6,6 +6,8 @@ import FormData from "form-data";
 import Busboy from "busboy";
 import { Request, Response } from "express";
 import { url } from "node:inspector";
+import busboy from "busboy";
+import { record } from "zod";
 
 export class FileService {
     private baseUrl: string;
@@ -16,7 +18,13 @@ export class FileService {
     async uploadFile(req:Request,res:Response):Promise<void> {
         const url = new URL(this.baseUrl);
         const busBoy = Busboy({headers:req.headers});
+        const fields:Record<string,string> = {}
+        console.log("Busboy initialized");
+        busBoy.on("field",(name,val)=> {
+            fields[name] = val;
+        })
         busBoy.on("file", async(field, file, info) => {
+            console.log("File received:", info);
             const {filename,mimeType} = info;
             const form = new FormData();
             form.append("file", file,{
@@ -27,8 +35,9 @@ export class FileService {
             Object.entries(fileDefaultParams).forEach(([key,value])=>{
                 form.append(key, value as string);
             })
-            const body = req.body;
-            form.append('itemid', body.data.itemid ?? 0);
+            Object.entries(fields).forEach(([key,value])=>{
+                form.append(key, value);
+            });
             this.logger.info(`Uploading file to ${this.baseUrl}`);
             const response = await fetch(url.toString(), {
                 method: 'POST',
@@ -43,6 +52,15 @@ export class FileService {
             const responseData = await response.json();
             res.json(responseData);
         })
+        busBoy.on("error",(err :any)=>{
+            this.logger.error(`Busboy error: ${err.message}`);
+            res.status(500).json({ error: "Internal Server Error" });
+        })
+        busBoy.on("finish",()=> {
+            console.log("Busboy finished processing");
+        })
+
+        req.pipe(busBoy);
 
     }
 
