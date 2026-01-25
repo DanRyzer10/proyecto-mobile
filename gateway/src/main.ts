@@ -252,7 +252,7 @@ app.get('/courses',authMiddleware, (req, res) => {
  *                     type: string
  *                     format: date-time
  */
-app.get('/assignment',authMiddleware, (req, res) => {
+app.post('/assignment',authMiddleware, (req, res) => {
     assignmentController.getAssignments(req, res);
 });
 

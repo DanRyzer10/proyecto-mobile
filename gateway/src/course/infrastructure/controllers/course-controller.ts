@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import { CourseService } from "../../application/course-service";
 import { getCoursesPayloadSchema } from "../schema/course.schema";
 import { ICourseService } from "@/course/domain/course-service";
-import { serialize } from "v8";
+import { formatZodError } from "@/shared/infrastructure/zod-error-formatter";
 
 export class CourseController {
     constructor(private courseService: ICourseService) { }
@@ -12,7 +12,7 @@ export class CourseController {
             const user = (req as any).user;
             const validation = getCoursesPayloadSchema.safeParse(user);
             if ( !validation.success ) {
-                res.status(400).json({ error: "Invalid query parameters", details: validation.error });
+                res.status(400).json(formatZodError(validation.error));
                 return;
             }
             const userId = validation.data.data.userid;

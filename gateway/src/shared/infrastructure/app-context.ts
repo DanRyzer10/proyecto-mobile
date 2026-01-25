@@ -13,6 +13,8 @@ import { AssignmentController } from "@/assignment/infrastructure/controllers/as
 import { MoodleProxyController } from "@/auth/infrastructure/controllers/moodle-proxy-controller";
 import { TokenValidator } from "@/auth/infrastructure/helper/validate-token";
 import { TokenResolver } from "@/auth/infrastructure/helper/token-resolver";
+import { FileController } from "./controllers/file-controller";
+import { FileService } from "../application/file.service";
 /**
  * @export
  * @class AppContext
@@ -26,6 +28,8 @@ export class AppContext {
     private static _httpService: HttpService = new HttpService(this.logger);
     private static _userService: UserService = new UserService(this._httpService, this.logger);
     private static _tokenResolver: TokenResolver = new TokenResolver();
+    private static _fileService:FileService = new  FileService(this.logger);
+    private static _fileController: FileController = new FileController(this._fileService);
 
     public static getAuthControllerInstance(): AuthController {
         const authService = new AuthService(this.logger,this._validationToken,this._userService,this._tokenResolver);
@@ -49,6 +53,10 @@ export class AppContext {
 
     public static getMoodleProxyControllerInstance(): MoodleProxyController {
         return new MoodleProxyController(this.logger);
+    }
+
+    public static getFileControllerInstance():FileController {
+        return this._fileController;
     }
 
     public static eventSetup(): void {

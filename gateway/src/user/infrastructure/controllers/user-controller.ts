@@ -2,6 +2,7 @@ import { HttpService } from "@/shared/application/http.service";
 import { UserService } from "@/user/application/userService";
 import { Request, Response } from "express";
 import { createUserPayloadSchema } from "../dtos/user.schema";
+import { formatZodError } from "@/shared/infrastructure/zod-error-formatter";
 
 export class UserController {
     constructor(private httpService:HttpService, private userService:UserService){}
@@ -25,7 +26,7 @@ export class UserController {
             const validation = createUserPayloadSchema.safeParse(req.body);
             console.log('Validation result:', validation);
             if(!validation.success) {
-                return res.status(400).json({error: 'Invalid user data', details: validation.error});
+                return res.status(400).json(formatZodError(validation.error));
             }
             const response = await this.userService.createUser(validation.data.data);
             return res.json(response);

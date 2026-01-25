@@ -1,3 +1,6 @@
 ./backup_html
 ./backup_moodle_data
 ./terraform/terraform.tfvars
+.terraform/
+.terraform/*
+.terraform.lock.hcl

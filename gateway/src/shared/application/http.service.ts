@@ -19,7 +19,13 @@ export class HttpService {
         });
         if (resolveToken) url.searchParams.delete('wstoken');
         Object.entries(params).forEach(([key,value])=>{
-            url.searchParams.append(key, value as string);
+            if(Array.isArray(value))  {
+                value.forEach((item,index)=> {
+                    url.searchParams.append(`${key}[${index}]`, item.toString());
+                })
+            }else {
+                url.searchParams.append(key, value as string);
+            }
         });
         this.logger.info(`Making GET request to ${url.toString()}`);
         const response = await fetch(url.toString(),{

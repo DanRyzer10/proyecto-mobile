@@ -14,3 +14,10 @@ export const defaultParams = {
     moodlewsrestformat: MOODLE_REST_FORMAT,
     wstoken: MOODLE_TOKEN,
 }
+
+export const fileDefaultParams = {
+    component: "assignsubmission_file",
+    filearea: "submission_files",
+    filepath: "/",
+    ...defaultParams
+}
