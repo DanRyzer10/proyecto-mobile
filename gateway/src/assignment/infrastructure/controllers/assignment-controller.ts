@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import { AssignmentService } from "../../application/assignment-service";
 import { IAssignmentService } from "@/assignment/domain/assignment-service";
 import { getCoursesPayloadSchema } from "@/course/infrastructure/schema/course.schema";
-import { getAssignmentsPayloadSchema } from "../schema/assignment.schema";
+import { getAssignmentsPayloadSchema, saveSubmissionPayloadSchema } from "../schema/assignment.schema";
 import { formatZodError } from "@/shared/infrastructure/zod-error-formatter";
 
 export class AssignmentController {
@@ -36,6 +36,30 @@ export class AssignmentController {
         } catch (error) {
             console.log("Error fetching assignments:", error);
             res.status(500).json({ error: "Failed to fetch assignments" });
+        }
+    }
+
+    async saveSubmission(req:Request,res:Response): Promise<void> {
+        try {
+            const  user = (req as any).user;
+            const body = req.body;
+            const  userValidation = getCoursesPayloadSchema.safeParse(user);
+            const bodyValidation = saveSubmissionPayloadSchema.safeParse(body);
+
+
+            if( !userValidation.success ) {
+                res.status(400).json(formatZodError(userValidation.error));
+                return;
+            }
+            
+            if( !bodyValidation.success ) {
+                res.status(400).json(formatZodError(bodyValidation.error));
+                return;
+            }
+
+        }catch(error) {
+            console.log("Error saving submission:", error);
+            res.status(500).json({ error: "Failed to save submission" });
         }
     }
 }

@@ -4,6 +4,8 @@ import { defaultParams, functionMap } from "../infrastructure/function-map";
 import { PassThrough } from "node:stream";
 import FormData from "form-data";
 import axios from "axios";
+import { keyof } from "zod";
+import { appendParams } from "../infrastructure/helpers/helpers";
 
 export class HttpService {
     private baseUrl:string;
@@ -21,15 +23,9 @@ export class HttpService {
             url.searchParams.append(key, value as string);
         });
         if (resolveToken) url.searchParams.delete('wstoken');
-        Object.entries(params).forEach(([key,value])=>{
-            if(Array.isArray(value))  {
-                value.forEach((item,index)=> {
-                    url.searchParams.append(`${key}[${index}]`, item.toString());
-                })
-            }else {
-                url.searchParams.append(key, value as string);
-            }
-        });
+        Object.entries(params).forEach(([key,value])=> {
+            appendParams(url.searchParams,key,value);
+        })
         this.logger.info(`Making GET request to ${url.toString()}`);
         try {
             const response = await axios.get(url.toString());

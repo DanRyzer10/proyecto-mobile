@@ -7,7 +7,8 @@ export const functionMap = {
     enrol_user_to_course: 'enrol_manual_enrol_users',
     get_courses: 'core_enrol_get_users_courses',
     get_assignments: 'mod_assign_get_assignments',
-    local_oauth2google: 'local_oauth2google_login'
+    local_oauth2google: 'local_oauth2google_login',
+    save_submission:"mod_assign_save_submission"
 }
 
 export const defaultParams = {
