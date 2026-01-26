@@ -18,6 +18,5 @@ export const defaultParams = {
 export const fileDefaultParams = {
     component: "assignsubmission_file",
     filearea: "submission_files",
-    filepath: "/",
-    ...defaultParams
+    filepath: "/"
 }

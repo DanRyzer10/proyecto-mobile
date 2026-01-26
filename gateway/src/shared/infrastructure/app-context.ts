@@ -28,7 +28,7 @@ export class AppContext {
     private static _httpService: HttpService = new HttpService(this.logger);
     private static _userService: UserService = new UserService(this._httpService, this.logger);
     private static _tokenResolver: TokenResolver = new TokenResolver();
-    private static _fileService:FileService = new  FileService(this.logger);
+    private static _fileService:FileService = new  FileService(this.logger,this._httpService);
     private static _fileController: FileController = new FileController(this._fileService);
 
     public static getAuthControllerInstance(): AuthController {
