@@ -10,10 +10,21 @@ export class AuthController {
     }
     async oauthCallback(req: Request, res: Response): Promise<void> {
         try {
+            const  redirectUrl = req.query.redirect_uri as string;
             const result = await this.authService.oauthHandler(req as any);
             console.log('Respuesta final xd', result);
-            res.json(result);
-
+            if(!redirectUrl.includes('moodlecloneapp://')) {
+                res.status(400).send('Invalid redirect URI');
+                return;
+            }
+            const url = new URL(redirectUrl);
+            url.searchParams.append('token', result.token);
+            url.searchParams.append('firstname', result.firstname);
+            url.searchParams.append('lastname', result.lastname);
+            url.searchParams.append('email', result.email);
+            url.searchParams.append('picture', result.picture);
+            res.redirect(url.toString());
+            // res.json(result);
         } catch (ex: any) {
             res.status(500).send(`OAuth callback error: ${ex?.message || String(ex)}`);
         }
