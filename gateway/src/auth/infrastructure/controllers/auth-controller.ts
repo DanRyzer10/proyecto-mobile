@@ -10,7 +10,7 @@ export class AuthController {
     }
     async oauthCallback(req: Request, res: Response): Promise<void> {
         try {
-            const  redirectUrl = req.query.redirect_uri as string;
+            const  redirectUrl = 'moodlecloneapp://auth/callback';
             const result = await this.authService.oauthHandler(req as any);
             console.log('Respuesta final xd', result);
             if(!redirectUrl.includes('moodlecloneapp://')) {
