@@ -23,8 +23,22 @@ export class AuthController {
             url.searchParams.append('lastname', result.lastname);
             url.searchParams.append('email', result.email);
             url.searchParams.append('picture', result.picture);
-            res.redirect(url.toString());
-            // res.json(result);
+            const finalUrl = url.toString();                                                                                                                                                                                                                                                                                                                                                                       
+            res.send(`                                                                                                                                          
+                <!DOCTYPE html>                                                                                                                                   
+                <html>                                                                                                                                            
+                <head>                                                                                                                                          
+                    <meta charset="utf-8">                                                                                                                        
+                    <title>Redireccionando</title>                                                                                                                 
+                </head>                                                                                                                                         
+                <body>                                                                                                                                          
+                    <p>Redirecting to app...</p>                                                                                                                  
+                    <script>                                                                                                                                      
+                    window.location.href = "${finalUrl}";                                                                                                       
+                    </script>                                                                                                                                     
+                </body>                                                                                                                                         
+                </html>                                                                                                                                           
+            `);
         } catch (ex: any) {
             res.status(500).send(`OAuth callback error: ${ex?.message || String(ex)}`);
         }
