@@ -70,4 +70,20 @@ export class AuthService implements Auth {
         }
         
     }
+    async login(username: string, password: string): Promise<any> {
+        try {
+            const moodleResponse = await this.userService.loginUserWithPassword(username, password);
+            return {
+                token: moodleResponse,
+                firstname: 'admin',
+                lastname: 'admin',
+                email: username,
+                picture: ''
+            }
+
+        }catch (ex) {
+            this.logger.error('Login error', ex);
+            return Promise.reject(ex);
+        }
+    }
 }

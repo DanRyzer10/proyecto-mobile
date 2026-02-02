@@ -1,10 +1,9 @@
-import { MOODLE_URL } from "@/constants";
+import { MOODLE_LOGIN_URL, MOODLE_URL } from "@/constants";
 import { Logger } from "../infrastructure/logger";
 import { defaultParams, functionMap } from "../infrastructure/function-map";
 import { PassThrough } from "node:stream";
 import FormData from "form-data";
 import axios from "axios";
-import { keyof } from "zod";
 import { appendParams } from "../infrastructure/helpers/helpers";
 
 export class HttpService {
@@ -34,6 +33,21 @@ export class HttpService {
             const status = error.response?.status || 'unknown';
             this.logger.error(`GET request failed with status ${status}`);
             return Promise.reject(new Error(`GET request failed with status ${status}`));
+        }
+    }
+    async login(username:string,password:string):Promise<any> {
+        const url = new URL(MOODLE_LOGIN_URL);
+        url.searchParams.append('username', username);
+        url.searchParams.append('password', password);
+        url.searchParams.append('service', 'external_api');
+        this.logger.info(`Making LOGIN request to ${url.toString()}`);
+        try {
+            const response = await axios.get(url.toString());
+            return response.data;
+        } catch (error: any) {
+            const status = error.response?.status || 'unknown';
+            this.logger.error(`LOGIN request failed with status ${status}`);
+            return Promise.reject(new Error(`LOGIN request failed with status ${status}`));
         }
     }
 

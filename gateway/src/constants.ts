@@ -11,3 +11,4 @@ export const MOODLE_REST_FORMAT = process.env.MOODLE_REST_FORMAT || 'json';
 export const MOODLE_URL = process.env.MOODLE_URL || '';
 export const JWT_SECRET = process.env.JWT_SECRET;
 export const MOODLE_FILE_URL = process.env.MOODLE_FILE_URL || '';
+export const MOODLE_LOGIN_URL = process.env.MOODLE_LOGIN_URL || '';

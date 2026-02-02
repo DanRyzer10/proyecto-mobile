@@ -89,4 +89,8 @@ router.get('/auth/google/callback', (req, res) => {
     authController.oauthCallback(req, res);
 });
 
+router.post('/auth/login', (req,res) => {
+    authController.login(req,res);
+})
+
 export default router;

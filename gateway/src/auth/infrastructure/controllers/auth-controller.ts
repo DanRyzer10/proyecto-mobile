@@ -43,4 +43,17 @@ export class AuthController {
             res.status(500).send(`OAuth callback error: ${ex?.message || String(ex)}`);
         }
     }
+    async login(req:Request,res:Response): Promise<void> {
+        try {
+            const {username, password} = req.body;
+            if (!username || !password) {
+                res.status(400).json({error: 'Username and password are required'});
+                return;
+            }
+            const result = await this.authService.login(username, password);
+            res.json(result);
+        } catch (ex: any) {
+            res.status(500).send(`Login error: ${ex?.message || String(ex)}`);
+        }
+    }
 }

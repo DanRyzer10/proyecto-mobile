@@ -7,4 +7,5 @@ export interface IUserService {
     deleteUser(id: number): Promise<any>;
     getUserByField(field:string,value:string | string[]):Promise<any>;
     loginUser(email:string,google_id:string,firstname:string,lastname:string):Promise<any>;
+    loginUserWithPassword(email:string,password:string):Promise<any>;
 }

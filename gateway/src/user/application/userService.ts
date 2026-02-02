@@ -139,4 +139,14 @@ export class UserService implements IUserService {
         }
 
     }
+    public async loginUserWithPassword(email:string, password:string) : Promise<any> {
+        this.log.info(`Logging in user with email: ${email}`);
+        const response = await this.httpService.login(email, password);
+        console.log('Moodle login response: ', response);
+        if(response.errorcode){
+            return Promise.reject(new Error('Invalid login credentials'));
+        }
+
+        return response.token;
+    }
 }
