@@ -73,8 +73,9 @@ export class AuthService implements Auth {
     async login(username: string, password: string): Promise<any> {
         try {
             const moodleResponse = await this.userService.loginUserWithPassword(username, password);
+            const jwtToken = this.tokenResolver.encodeToken({userid:1,token:moodleResponse});
             return {
-                token: moodleResponse,
+                token: jwtToken,
                 firstname: 'admin',
                 lastname: 'admin',
                 email: username,
