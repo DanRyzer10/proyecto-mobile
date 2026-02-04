@@ -1,120 +1,135 @@
-import { DefaultAzureCredential, TokenCredential } from '@azure/identity';
-import { Container, CosmosClient, Database, FeedResponse, ItemResponse, SqlQuerySpec } from '@azure/cosmos';
+import { Container, CosmosClient, Database, FeedResponse, ItemDefinition, ItemResponse, SqlQuerySpec } from '@azure/cosmos';
+import { Logger } from '../logger';
+import { COSMOS_CONNECTION_STRING, COSMOS_DATABASE_NAME, COSMOS_CONTAINER_NAME } from '../../../constants';
 
+export class CosmosProvider {
+    private client: CosmosClient | null = null;
+    private database: Database | null = null;
+    private container: Container | null = null;
+    private logger: Logger;
 
-interface Product {
-    id: string;
-    category: string;
-    name: string;
-    quantity: number;
-    price: number;
-    clearance: boolean;
+    constructor(logger?: Logger) {
+        this.logger = logger || new Logger();
+    }
+
+    async connect(): Promise<void> {
+        try {
+            if (!COSMOS_CONNECTION_STRING) {
+                throw new Error('COSMOS_CONNECTION_STRING is not defined');
+            }
+
+            this.client = new CosmosClient(COSMOS_CONNECTION_STRING);
+            this.database = this.client.database(COSMOS_DATABASE_NAME);
+            this.container = this.database.container(COSMOS_CONTAINER_NAME);
+
+            this.logger.info(`Connected to Cosmos DB: ${COSMOS_DATABASE_NAME}/${COSMOS_CONTAINER_NAME}`);
+        } catch (error) {
+            this.logger.error('Failed to connect to Cosmos DB', error);
+            throw error;
+        }
+    }
+
+    async testConnection(): Promise<{ success: boolean; message: string; latencyMs?: number }> {
+        const startTime = Date.now();
+
+        try {
+            if (!this.client) {
+                await this.connect();
+            }
+
+            const { resource: databaseInfo } = await this.database!.read();
+            const latencyMs = Date.now() - startTime;
+
+            return {
+                success: true,
+                message: `Connected to database: ${databaseInfo?.id}`,
+                latencyMs
+            };
+        } catch (error: any) {
+            return {
+                success: false,
+                message: `Connection failed: ${error.message}`
+            };
+        }
+    }
+
+    getClient(): CosmosClient {
+        if (!this.client) {
+            throw new Error('Cosmos client not initialized. Call connect() first.');
+        }
+        return this.client;
+    }
+
+    getDatabase(): Database {
+        if (!this.database) {
+            throw new Error('Database not initialized. Call connect() first.');
+        }
+        return this.database;
+    }
+
+    getContainer(): Container {
+        if (!this.container) {
+            throw new Error('Container not initialized. Call connect() first.');
+        }
+        return this.container;
+    }
+
+    async upsertItem<T extends ItemDefinition>(item: T): Promise<ItemResponse<ItemDefinition>> {
+        try {
+            const response = await this.getContainer().items.upsert(item);
+            this.logger.info(`Upserted item: ${item.id}`);
+            return response;
+        } catch (error) {
+            this.logger.error(`Failed to upsert item: ${item.id}`, error);
+            throw error;
+        }
+    }
+
+    async readItem<T extends ItemDefinition>(id: string, partitionKey: string): Promise<T | undefined> {
+        try {
+            const response = await this.getContainer().item(id, partitionKey).read<T>();
+            return response.resource;
+        } catch (error) {
+            this.logger.error(`Failed to read item: ${id}`, error);
+            throw error;
+        }
+    }
+
+    async queryItems<T extends ItemDefinition>(query: string, parameters?: { name: string; value: any }[]): Promise<T[]> {
+        try {
+            const querySpec: SqlQuerySpec = { query, parameters };
+            const response: FeedResponse<T> = await this.getContainer().items.query<T>(querySpec).fetchAll();
+            return response.resources;
+        } catch (error) {
+            this.logger.error('Failed to execute query', error);
+            throw error;
+        }
+    }
+
+    async deleteItem(id: string, partitionKey: string): Promise<void> {
+        try {
+            await this.getContainer().item(id, partitionKey).delete();
+            this.logger.info(`Deleted item: ${id}`);
+        } catch (error) {
+            this.logger.error(`Failed to delete item: ${id}`, error);
+            throw error;
+        }
+    }
+
+    async disconnect(): Promise<void> {
+        this.client = null;
+        this.database = null;
+        this.container = null;
+        this.logger.info('Disconnected from Cosmos DB');
+    }
 }
-// import { any, Product } from './types'
 
-export class DataClient {
+// Singleton instance
+let cosmosProviderInstance: CosmosProvider | null = null;
 
-    async start(any: any) {
-        const client: CosmosClient = await this.createClient(any);
-
-        any('Current Status:\tStarting...');
-
-        const container: Container = await this.createContainer(any, client);
-
-        await this.createItemVerbose(any, container);
-
-        await this.createItemConcise(any, container);
-
-        await this.readItem(any, container);
-
-        await this.queryItems(any, container);
-
-        any('Current Status:\tFinalizing...');
+export function getCosmosProvider(): CosmosProvider {
+    if (!cosmosProviderInstance) {
+        cosmosProviderInstance = new CosmosProvider();
     }
-
-    async createClient(_: any): Promise<CosmosClient> {
-        const client = new CosmosClient(
-            "<azure-cosmos-db-nosql-connection-string>"
-        );
-
-        return client;
-    }
-
-    async createContainer(any: any, client: CosmosClient): Promise<Container> {
-        const databaseName: string = process.env.CONFIGURATION__AZURECOSMOSDB__DATABASENAME ?? 'cosmicworks';
-        const database: Database = client.database(databaseName);
-
-        any(`Get database:\t${database.id}`);
-
-        const containerName: string = process.env.CONFIGURATION__AZURECOSMOSDB__CONTAINERNAME ?? 'products';
-        const container: Container = database.container(containerName);
-
-        any(`Get container:\t${container.id}`);
-
-        return container;
-    }
-
-    async createItemVerbose(any: any, container: Container) {
-        var item: Product = {
-            'id': 'aaaaaaaa-0000-1111-2222-bbbbbbbbbbbb',
-            'category': 'gear-surf-surfboards',
-            'name': 'Yamba Surfboard',
-            'quantity': 12,
-            'price': 850.00,
-            'clearance': false
-        };
-
-        var response: ItemResponse<Product> = await container.items.upsert<Product>(item);
-
-        if (response.statusCode == 200 || response.statusCode == 201) {
-            any(`Upserted item:\t${JSON.stringify(response.resource)}`);
-        }
-        any(`Status code:\t${response.statusCode}`);
-        any(`Request charge:\t${response.requestCharge}`);
-    }
-
-    async createItemConcise(any: any, container: Container) {
-        var item: Product = {
-            'id': 'bbbbbbbb-1111-2222-3333-cccccccccccc',
-            'category': 'gear-surf-surfboards',
-            'name': 'Kiama Classic Surfboard',
-            'quantity': 25,
-            'price': 790.00,
-            'clearance': true
-        };
-
-        var { resource } = await container.items.upsert<Product>(item);
-        any(`Upserted item:\t${JSON.stringify(resource)}`);
-    }
-
-    async readItem(any: any, container: Container) {
-        var id = 'aaaaaaaa-0000-1111-2222-bbbbbbbbbbbb';
-        var partitionKey = 'gear-surf-surfboards';
-
-        var response: ItemResponse<Product> = await container.item(id, partitionKey).read<Product>();
-        var read_item: Product = response.resource!;
-
-        any(`Read item id:\t${read_item?.id}`);
-        any(`Read item:\t${JSON.stringify(read_item)}`);
-        any(`Status code:\t${response.statusCode}`);
-        any(`Request charge:\t${response.requestCharge}`);
-    }
-
-    async queryItems(any: any, container: Container) {
-        const querySpec: SqlQuerySpec = {
-            query: 'SELECT * FROM products p WHERE p.category = @category',
-            parameters: [
-                {
-                    name: '@category',
-                    value: 'gear-surf-surfboards'
-                }
-            ]
-        };
-
-        var response: FeedResponse<Product> = await container.items.query<Product>(querySpec).fetchAll();
-        for (var item of response.resources) {
-            any(`Found item:\t${item.name}\t${item.id}`);
-        }
-        any(`Request charge:\t${response.requestCharge}`);
-    }
+    return cosmosProviderInstance;
 }

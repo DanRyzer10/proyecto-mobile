@@ -4,6 +4,7 @@ import userRoutes from "./user.routes";
 import courseRoutes from "./course.routes";
 import assignmentRoutes from "./assignment.routes";
 import fileRoutes from "./file.routes";
+import deviceRoutes from "./device.routes";
 
 const router = Router();
 
@@ -12,5 +13,6 @@ router.use(userRoutes);
 router.use(courseRoutes);
 router.use(assignmentRoutes);
 router.use(fileRoutes)
+router.use(deviceRoutes)
 
 export default router;

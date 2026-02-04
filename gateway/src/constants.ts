@@ -12,3 +12,8 @@ export const MOODLE_URL = process.env.MOODLE_URL || '';
 export const JWT_SECRET = process.env.JWT_SECRET;
 export const MOODLE_FILE_URL = process.env.MOODLE_FILE_URL || '';
 export const MOODLE_LOGIN_URL = process.env.MOODLE_LOGIN_URL || '';
+
+// Azure Cosmos DB
+export const COSMOS_CONNECTION_STRING = process.env.COSMOS_CONNECTION_STRING || '';
+export const COSMOS_DATABASE_NAME = process.env.COSMOS_DATABASE_NAME || 'cosmicworks';
+export const COSMOS_CONTAINER_NAME = process.env.COSMOS_CONTAINER_NAME || 'products';

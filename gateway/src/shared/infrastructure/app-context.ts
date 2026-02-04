@@ -15,6 +15,9 @@ import { TokenValidator } from "@/auth/infrastructure/helper/validate-token";
 import { TokenResolver } from "@/auth/infrastructure/helper/token-resolver";
 import { FileController } from "./controllers/file-controller";
 import { FileService } from "../application/file.service";
+import { DeviceService } from "@/messages/application/device-service";
+import { CosmosProvider } from "./providers/cosmos.provider";
+import { DeviceController } from "@/messages/infrastructure/controllers/device-controller";
 /**
  * @export
  * @class AppContext
@@ -30,6 +33,9 @@ export class AppContext {
     private static _tokenResolver: TokenResolver = new TokenResolver();
     private static _fileService:FileService = new  FileService(this.logger,this._httpService);
     private static _fileController: FileController = new FileController(this._fileService);
+    private static cosmosProvider:CosmosProvider = new CosmosProvider(this.logger);
+    private static _deviceService: DeviceService = new DeviceService(this.cosmosProvider);
+    private static _deviceController:DeviceController = new DeviceController(this._deviceService)
 
     public static getAuthControllerInstance(): AuthController {
         const authService = new AuthService(this.logger,this._validationToken,this._userService,this._tokenResolver);
@@ -57,6 +63,9 @@ export class AppContext {
 
     public static getFileControllerInstance():FileController {
         return this._fileController;
+    }
+    public static getDeviceControllerInstance():DeviceController {
+        return this._deviceController;
     }
 
     public static eventSetup(): void {
