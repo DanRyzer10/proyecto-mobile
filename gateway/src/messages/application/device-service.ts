@@ -5,7 +5,7 @@ import { IDevice } from "../domain/device";
 export class DeviceService implements IDeviceService {
     constructor(private cosmosProvider: CosmosProvider) {}
     async registerDevice(userid: string, fcmToken: string): Promise<any> {
-        const exists = await this.cosmosProvider.readItem<IDevice>(userid, userid);
+        const exists = await this.cosmosProvider.readItem<IDevice>(userid, 'userid');
         if (exists) {
             return;
         }
@@ -14,6 +14,7 @@ export class DeviceService implements IDeviceService {
             fcmToken,
             registeredAt: new Date().toISOString()
         }
+        console.log("Registering device:", item);
         const response = await this.cosmosProvider.upsertItem(item);
         if (response.statusCode !== 200 && response.statusCode !== 201) {
             throw new Error("Failed to register device");

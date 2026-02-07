@@ -77,7 +77,6 @@ export class CosmosProvider {
     async upsertItem<T extends ItemDefinition>(item: T): Promise<ItemResponse<ItemDefinition>> {
         try {
             const response = await this.getContainer().items.upsert(item);
-            this.logger.info(`Upserted item: ${item.id}`);
             return response;
         } catch (error) {
             this.logger.error(`Failed to upsert item: ${item.id}`, error);
