@@ -71,5 +71,13 @@ export class AppContext {
     public static eventSetup(): void {
 
     }
+    public static async connectToCosmos() {
+        try {
+            await this.cosmosProvider.connect();
+            this.logger.info('Successfully connected to Cosmos DB');
+        }catch (error) {
+            this.logger.error('Error connecting to Cosmos DB', error);
+        }
+    }
 
 }
