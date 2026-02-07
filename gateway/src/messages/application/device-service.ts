@@ -5,7 +5,7 @@ import { IDevice } from "../domain/device";
 export class DeviceService implements IDeviceService {
     constructor(private cosmosProvider: CosmosProvider) {}
     async registerDevice(userid: string, fcmToken: string): Promise<any> {
-        const exists = await this.cosmosProvider.readItem<IDevice>(userid,'userid');
+        const exists = await this.cosmosProvider.readItem<IDevice>(userid, userid);
         if (exists) {
             return;
         }

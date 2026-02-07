@@ -13,8 +13,8 @@ export class DeviceController {
                 res.status(400).json({ error: "Invalid request payload" });
                 return;
             }
-            const userId = user.userid;
-            const wsToken  = user.token;
+            const userId = String(user.data.userid);
+            const wsToken  = user.data.token;
             const fcmToken = validation.data.data.fcmToken;
             await this.deviceService.registerDevice(userId,fcmToken);
             res.status(200).json({ message: "Device registered successfully" });
