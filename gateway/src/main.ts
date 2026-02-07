@@ -4,9 +4,11 @@ import swaggerUi from 'swagger-ui-express';
 import { swaggerSpec } from './config/swagger';
 import apiRouter from '@/shared/infrastructure/routes';
 import moodleProxyRouter from '@/shared/infrastructure/routes/moodle-proxy.routes';
+import { AppContext } from './shared/infrastructure/app-context';
 
 const app = express();
 app.use(express.json())
+AppContext.connectToCosmos();
 
 app.use('/public', express.static(path.join(__dirname, '../public')))
 
@@ -18,6 +20,7 @@ app.get('/health', (req, res) => {
 
 
 app.use('/api/v1', apiRouter);
+
 
 
 app.use(moodleProxyRouter);
