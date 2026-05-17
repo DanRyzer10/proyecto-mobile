@@ -1,0 +1,106 @@
+pipeline {
+    agent any
+    parameters {
+    string(name: 'RESEND_TO', defaultValue: 'angeldaniel6709@gmail.com,gnoely319@gmail.com', description: 'Comma-separated recipient emails')
+    string(name: 'STAGE', defaultValue: 'dev', description: 'Serverless stage to deploy')
+    }
+
+    environment {
+        AZURE_WEBAPP_NAME    = 'moodle-oauth-gateway-angel'
+        AZURE_RESOURCE_GROUP = 'moodle-gateway-rg'
+        NODE_ENV             = 'production'
+    }
+
+    tools {
+        nodejs 'NodeJS-22'
+    }
+
+    triggers {
+        githubPush()
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+
+        stage('Install dependencies') {
+            steps {
+                dir('gateway') {
+                    sh 'npm ci'
+                }
+            }
+        }
+
+        stage('Test') {
+            steps {
+                dir('gateway') {
+                    sh 'npm test --if-present'
+                }
+            }
+        }
+
+        stage('Build') {
+            steps {
+                dir('gateway') {
+                    sh 'npm run build'
+                }
+            }
+        }
+
+        stage('Deploy to Azure') {
+            when {
+                branch 'master'
+            }
+            steps {
+                withCredentials([azureServicePrincipal(
+                    credentialsId:      'AZURE_SP',
+                    subscriptionIdVariable: 'AZURE_SUBSCRIPTION_ID',
+                    clientIdVariable:       'AZURE_CLIENT_ID',
+                    clientSecretVariable:   'AZURE_CLIENT_SECRET',
+                    tenantIdVariable:       'AZURE_TENANT_ID'
+                )]) {
+                    sh '''
+                        az login --service-principal \
+                            --username "$AZURE_CLIENT_ID" \
+                            --password "$AZURE_CLIENT_SECRET" \
+                            --tenant  "$AZURE_TENANT_ID"
+
+                        az account set --subscription "$AZURE_SUBSCRIPTION_ID"
+
+                        cd gateway
+                        zip -r ../deploy.zip . \
+                            --exclude "*.ts" \
+                            --exclude "src/*" \
+                            --exclude ".env*" \
+                            --exclude "jest*" \
+                            --exclude "*.spec.*" \
+                            --exclude "logs/*"
+
+                        az webapp deploy \
+                            --resource-group "$AZURE_RESOURCE_GROUP" \
+                            --name         "$AZURE_WEBAPP_NAME" \
+                            --src-path     ../deploy.zip \
+                            --type         zip \
+                            --async false
+
+                        az logout
+                    '''
+                }
+            }
+        }
+    }
+
+    post {
+    always {
+      script {
+        withCredentials([string(credentialsId: 'resend_api_key', variable: 'RESEND_API_KEY')]) {
+          env.BUILD_STATUS = currentBuild.currentResult
+          sh "node scripts/send_resend_email.js '${params.RESEND_TO}' 'Pipeline Status: ${env.BUILD_STATUS}' 'El pipeline ha finalizado con estado: ${env.BUILD_STATUS}. Revisa los logs en Jenkins para más detalles.' || true"
+        }
+      }
+    }
+  }
+}
