@@ -15,22 +15,16 @@ pipeline {
         nodejs 'NodeJS-22'
     }
 
-    // triggers {
-    //     githubPush()
-    // }
+    triggers {
+        githubPush()
+    }
 
     stages {
         stage('Checkout') {
             steps {
-                checkout([$class: 'GitSCM', 
-                    branches: [[name: '*/main']], 
-                    userRemoteConfigs: [[
-                        url: 'git@github.com:DanRyzer10/proyecto-mobile.git', 
-                        credentialsId: 'github-ssh-key'
-                    ]]
-                ])
+                checkout scm
             }
-            }
+        }
 
         stage('Install dependencies') {
             steps {
